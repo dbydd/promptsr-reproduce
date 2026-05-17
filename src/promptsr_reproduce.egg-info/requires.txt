@@ -1,0 +1,10 @@
+torch>=2.2
+pytorch-lightning>=2.4
+torchmetrics>=1.4
+numpy>=1.26
+Pillow>=10.0
+pyyaml>=6.0
+tensorboardX>=2.6
+jupyterlab>=4.2
+ipykernel>=6.29
+matplotlib>=3.9

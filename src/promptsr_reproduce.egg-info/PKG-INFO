@@ -1,0 +1,15 @@
+Metadata-Version: 2.4
+Name: promptsr-reproduce
+Version: 0.1.0
+Summary: PromptSR reproduction scaffold
+Requires-Python: >=3.11
+Requires-Dist: torch>=2.2
+Requires-Dist: pytorch-lightning>=2.4
+Requires-Dist: torchmetrics>=1.4
+Requires-Dist: numpy>=1.26
+Requires-Dist: Pillow>=10.0
+Requires-Dist: pyyaml>=6.0
+Requires-Dist: tensorboardX>=2.6
+Requires-Dist: jupyterlab>=4.2
+Requires-Dist: ipykernel>=6.29
+Requires-Dist: matplotlib>=3.9

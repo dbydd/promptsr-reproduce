@@ -1,0 +1,17 @@
+README.md
+pyproject.toml
+src/promptsr/__init__.py
+src/promptsr/config.py
+src/promptsr/data.py
+src/promptsr/lit_module.py
+src/promptsr/model.py
+src/promptsr/optim.py
+src/promptsr/py.typed
+src/promptsr/train.py
+src/promptsr/trainer_factory.py
+src/promptsr/workflow.py
+src/promptsr_reproduce.egg-info/PKG-INFO
+src/promptsr_reproduce.egg-info/SOURCES.txt
+src/promptsr_reproduce.egg-info/dependency_links.txt
+src/promptsr_reproduce.egg-info/requires.txt
+src/promptsr_reproduce.egg-info/top_level.txt
