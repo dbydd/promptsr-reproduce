@@ -1,8 +1,10 @@
 README.md
 pyproject.toml
 src/promptsr/__init__.py
+src/promptsr/checkpoint_utils.py
 src/promptsr/config.py
 src/promptsr/data.py
+src/promptsr/eval.py
 src/promptsr/lit_module.py
 src/promptsr/model.py
 src/promptsr/optim.py

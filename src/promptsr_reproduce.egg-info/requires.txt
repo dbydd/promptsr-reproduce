@@ -8,3 +8,4 @@ tensorboardX>=2.6
 jupyterlab>=4.2
 ipykernel>=6.29
 matplotlib>=3.9
+pandas>=3.0.3

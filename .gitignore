@@ -1,0 +1,14 @@
+# uv
+.venv/
+
+# python
+__pycache__/
+*.pyc
+
+# data and outputs
+/data/
+/outputs/
+/lightning_logs/
+notebooks/outputs
+
+.DS*

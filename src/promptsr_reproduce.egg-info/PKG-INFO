@@ -13,3 +13,4 @@ Requires-Dist: tensorboardX>=2.6
 Requires-Dist: jupyterlab>=4.2
 Requires-Dist: ipykernel>=6.29
 Requires-Dist: matplotlib>=3.9
+Requires-Dist: pandas>=3.0.3

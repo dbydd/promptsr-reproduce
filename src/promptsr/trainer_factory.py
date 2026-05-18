@@ -10,13 +10,6 @@ import torch
 from .config import PromptSRConfig
 
 
-def get_accelerator() -> str:
-    if torch.backends.mps.is_available():
-        return 'mps'
-    if torch.cuda.is_available():
-        return 'gpu'
-    return 'cpu'
-
 
 def build_trainer(cfg: PromptSRConfig, max_steps: int | None = None) -> pl.Trainer:
     output_dir = Path(cfg.output_dir)
@@ -30,8 +23,6 @@ def build_trainer(cfg: PromptSRConfig, max_steps: int | None = None) -> pl.Train
     )
     logger = TensorBoardLogger(save_dir=str(output_dir), name='tensorboard')
     return pl.Trainer(
-        accelerator=get_accelerator(),
-        devices=1,
         max_epochs=cfg.max_epochs,
         max_steps=max_steps if max_steps is not None else -1,
         logger=logger,
