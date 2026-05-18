@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Iterable
 
 import torch
+import torch.nn.functional as F
 from PIL import Image
 
 from .config import PromptSRConfig
@@ -54,16 +55,34 @@ def compute_psnr(sr: torch.Tensor, hr: torch.Tensor) -> float:
     return 10.0 * math.log10(1.0 / mse)
 
 
-def compute_ssim_like(sr: torch.Tensor, hr: torch.Tensor) -> float:
-    mu_x = sr.mean()
-    mu_y = hr.mean()
-    sigma_x = ((sr - mu_x) ** 2).mean()
-    sigma_y = ((hr - mu_y) ** 2).mean()
-    sigma_xy = ((sr - mu_x) * (hr - mu_y)).mean()
-    c1 = 0.01 ** 2
-    c2 = 0.03 ** 2
-    ssim = ((2 * mu_x * mu_y + c1) * (2 * sigma_xy + c2)) / ((mu_x ** 2 + mu_y ** 2 + c1) * (sigma_x + sigma_y + c2))
-    return float(ssim.item())
+def _gaussian_kernel(window_size: int = 11, sigma: float = 1.5, device: torch.device | None = None, dtype: torch.dtype | None = None) -> torch.Tensor:
+    coords = torch.arange(window_size, device=device, dtype=dtype)
+    coords = coords - window_size // 2
+    g = torch.exp(-(coords ** 2) / (2 * sigma ** 2))
+    g = g / g.sum()
+    kernel_2d = torch.outer(g, g)
+    return kernel_2d.view(1, 1, window_size, window_size)
+
+
+def compute_ssim(sr: torch.Tensor, hr: torch.Tensor) -> float:
+    sr = sr.to(torch.float32)
+    hr = hr.to(torch.float32)
+    c1 = (0.01 ** 2)
+    c2 = (0.03 ** 2)
+    window = _gaussian_kernel(device=sr.device, dtype=sr.dtype)
+
+    mu1 = F.conv2d(sr, window, stride=1, padding=0)
+    mu2 = F.conv2d(hr, window, stride=1, padding=0)
+    mu1_sq = mu1.pow(2)
+    mu2_sq = mu2.pow(2)
+    mu1_mu2 = mu1 * mu2
+
+    sigma1_sq = F.conv2d(sr * sr, window, stride=1, padding=0) - mu1_sq
+    sigma2_sq = F.conv2d(hr * hr, window, stride=1, padding=0) - mu2_sq
+    sigma12 = F.conv2d(sr * hr, window, stride=1, padding=0) - mu1_mu2
+
+    ssim_map = ((2 * mu1_mu2 + c1) * (2 * sigma12 + c2)) / ((mu1_sq + mu2_sq + c1) * (sigma1_sq + sigma2_sq + c2))
+    return float(ssim_map.mean().item())
 
 
 def evaluate_dataset(model, dataset_dir: Path, cfg: PromptSRConfig, device: torch.device):
@@ -82,7 +101,7 @@ def evaluate_dataset(model, dataset_dir: Path, cfg: PromptSRConfig, device: torc
             rows.append({
                 "name": hr_path.stem,
                 "psnr": compute_psnr(sr_y, hr_y),
-                "ssim": compute_ssim_like(sr_y, hr_y),
+                "ssim": compute_ssim(sr_y, hr_y),
             })
     return rows
 

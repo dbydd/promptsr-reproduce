@@ -21,6 +21,12 @@ def rgb_to_y_channel(x: torch.Tensor) -> torch.Tensor:
     return y.clamp(0.0, 1.0)
 
 
+def shave_tensor(x: torch.Tensor, border: int) -> torch.Tensor:
+    if border <= 0:
+        return x
+    return x[..., border:-border, border:-border]
+
+
 class PromptSRLightningModule(pl.LightningModule):
     def __init__(self, cfg: PromptSRConfig):
         super().__init__()
@@ -48,8 +54,8 @@ class PromptSRLightningModule(pl.LightningModule):
         sr = self(batch["lr"]).clamp(0.0, 1.0)
         hr = batch["hr"]
         loss = self.criterion(sr, hr)
-        sr_y = rgb_to_y_channel(sr)
-        hr_y = rgb_to_y_channel(hr)
+        sr_y = shave_tensor(rgb_to_y_channel(sr), self.cfg.shave_border)
+        hr_y = shave_tensor(rgb_to_y_channel(hr), self.cfg.shave_border)
         self.psnr.update(sr_y, hr_y)
         self.ssim.update(sr_y, hr_y)
         self.log("val/loss", loss, prog_bar=True, on_epoch=True, batch_size=1)
